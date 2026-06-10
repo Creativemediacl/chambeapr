@@ -1,0 +1,62 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List, Optional
+from datetime import datetime, timedelta
+from database import get_db
+from models import Worker, Review
+from schemas import WorkerCreate, WorkerResponse, ReviewCreate, ReviewResponse
+import random
+
+router = APIRouter()
+
+MUNICIPIOS = ["Adjuntas","Aguada","Aguadilla","Aguas Buenas","Aibonito","Anasco","Arecibo","Arroyo","Barceloneta","Barranquitas","Bayamon","Cabo Rojo","Caguas","Camuy","Canovanas","Carolina","Catano","Cayey","Ceiba","Ciales","Cidra","Coamo","Comerio","Corozal","Culebra","Dorado","Fajardo","Florida","Guanica","Guayama","Guayanilla","Guaynabo","Gurabo","Hatillo","Hormigueros","Humacao","Isabela","Jayuya","Juana Diaz","Juncos","Lajas","Lares","Las Marias","Las Piedras","Loiza","Luquillo","Manati","Maricao","Maunabo","Mayaguez","Moca","Morovis","Naguabo","Naranjito","Orocovis","Patillas","Penuelas","Ponce","Quebradillas","Rincon","Rio Grande","Sabana Grande","Salinas","San German","San Juan","San Lorenzo","San Sebastian","Santa Isabel","Toa Alta","Toa Baja","Trujillo Alto","Utuado","Vega Alta","Vega Baja","Vieques","Villalba","Yabucoa","Yauco"]
+
+CATEGORIAS = ["Electricista","Plomero","Aire Acondicionado","Carpintero","Pintor","Techado","Construccion","Jardineria","Limpieza","Mudanzas","Cocinero a Domicilio","Catering","Reposteria","Chef Privado","Meal Prep","Barbero a Domicilio","Maquillista","Masajista","Fotografia","Clases Particulares"]
+
+@router.get("/workers", response_model=List[WorkerResponse])
+def get_workers(municipality: Optional[str] = None, category: Optional[str] = None, db: Session = Depends(get_db)):
+    query = db.query(Worker).filter(Worker.is_active == True)
+    if municipality:
+        query = query.filter(Worker.municipality == municipality)
+    if category:
+        query = query.filter(Worker.categories.contains(category))
+    return query.all()
+
+@router.get("/workers/{worker_id}", response_model=WorkerResponse)
+def get_worker(worker_id: int, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.id == worker_id).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
+    return worker
+
+@router.post("/workers", response_model=WorkerResponse)
+def create_worker(worker: WorkerCreate, db: Session = Depends(get_db)):
+    existing = db.query(Worker).filter(Worker.email == worker.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Este email ya esta registrado")
+    trial_ends = datetime.utcnow() + timedelta(days=30)
+    db_worker = Worker(**worker.dict(), google_id=str(random.randint(1000000,9999999)), trial_ends_at=trial_ends)
+    db.add(db_worker)
+    db.commit()
+    db.refresh(db_worker)
+    return db_worker
+
+@router.post("/reviews", response_model=ReviewResponse)
+def create_review(review: ReviewCreate, db: Session = Depends(get_db)):
+    db_review = Review(**review.dict())
+    db.add(db_review)
+    db.commit()
+    db.refresh(db_review)
+    return db_review
+
+@router.get("/reviews/{worker_id}", response_model=List[ReviewResponse])
+def get_reviews(worker_id: int, db: Session = Depends(get_db)):
+    return db.query(Review).filter(Review.worker_id == worker_id).all()
+
+@router.get("/municipios")
+def get_municipios():
+    return {"municipios": MUNICIPIOS}
+
+@router.get("/categorias")
+def get_categorias():
+    return {"categorias": CATEGORIAS}
