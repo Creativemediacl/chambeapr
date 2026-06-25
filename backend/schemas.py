@@ -1,31 +1,23 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 class WorkerCreate(BaseModel):
-    name: str
-    email: str
-    phone: Optional[str] = None
-    bio: Optional[str] = None
+    full_name: str
+    profession: str
     municipality: str
-    categories: str
-    whatsapp: Optional[str] = None
-    photo_url: Optional[str] = None
+    description: str
+    phone_number: str
+    whatsapp_number: str
+    email: str
 
-class WorkerResponse(BaseModel):
+class WorkerPublic(BaseModel):
     id: int
-    name: str
-    email: str
-    phone: Optional[str] = None
-    bio: Optional[str] = None
+    full_name: str
+    profession: str
     municipality: str
-    categories: str
-    whatsapp: Optional[str] = None
-    photo_url: Optional[str] = None
-    is_active: bool
+    description: str
     is_verified: bool
-    trial_ends_at: Optional[datetime] = None
-    created_at: datetime
+    is_active: bool
 
     class Config:
         from_attributes = True
@@ -36,13 +28,12 @@ class ReviewCreate(BaseModel):
     rating: int
     comment: Optional[str] = None
 
-class ReviewResponse(BaseModel):
+class ReviewPublic(BaseModel):
     id: int
     worker_id: int
     reviewer_name: str
     rating: int
     comment: Optional[str] = None
-    created_at: datetime
 
     class Config:
         from_attributes = True

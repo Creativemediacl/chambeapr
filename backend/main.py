@@ -10,7 +10,7 @@ from routes.workers import router as workers_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="TallerPR API")
+app = FastAPI(title="ChambeaPR API")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
