@@ -7,3 +7,4 @@ alembic
 apscheduler 
 authlib 
 httpx 
+stripe 
