@@ -21,7 +21,7 @@ class WorkerPublic(BaseModel):
     is_verified: bool
     is_active: bool
     license_number: Optional[str] = None
-    subscription_status: str
+    subscription_status: str = "trial"
     trial_ends_at: Optional[datetime] = None
     created_at: Optional[datetime] = None
 
