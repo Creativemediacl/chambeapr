@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from urllib.parse import quote
+from datetime import datetime, timedelta
 from database import get_db
 from models import Worker, Review
 from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic
@@ -23,14 +24,24 @@ def get_workers(municipality: Optional[str] = None, profession: Optional[str] = 
 
 @router.post("/workers", response_model=WorkerPublic)
 def create_worker(worker: WorkerCreate, db: Session = Depends(get_db)):
+    if not worker.accepted_terms:
+        raise HTTPException(status_code=400, detail="Debes aceptar los terminos y condiciones")
     existing = db.query(Worker).filter(Worker.email == worker.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Este email ya esta registrado")
-    db_worker = Worker(**worker.dict())
+    trial_ends = datetime.utcnow() + timedelta(days=30)
+    db_worker = Worker(**worker.dict(), trial_ends_at=trial_ends)
     db.add(db_worker)
     db.commit()
     db.refresh(db_worker)
     return db_worker
+
+@router.get("/workers/{worker_id}", response_model=WorkerPublic)
+def get_worker(worker_id: int, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.id == worker_id).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
+    return worker
 
 @router.get("/workers/{worker_id}/contact")
 def contact_worker(worker_id: int, db: Session = Depends(get_db)):

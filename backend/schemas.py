@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 class WorkerCreate(BaseModel):
     full_name: str
@@ -9,6 +10,7 @@ class WorkerCreate(BaseModel):
     phone_number: str
     whatsapp_number: str
     email: str
+    accepted_terms: bool
 
 class WorkerPublic(BaseModel):
     id: int
@@ -18,6 +20,10 @@ class WorkerPublic(BaseModel):
     description: str
     is_verified: bool
     is_active: bool
+    license_number: Optional[str] = None
+    subscription_status: str
+    trial_ends_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -34,6 +40,7 @@ class ReviewPublic(BaseModel):
     reviewer_name: str
     rating: int
     comment: Optional[str] = None
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

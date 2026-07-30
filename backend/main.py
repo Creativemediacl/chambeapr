@@ -20,20 +20,24 @@ app.include_router(payments_router, prefix="/api")
 
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
-@app.get("/")
-def read_root():
-    path = os.path.join(os.getcwd(), "frontend", "index.html")
+def serve_html(filename):
+    path = os.path.join(os.getcwd(), "frontend", filename)
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
     return HTMLResponse(content=content)
+
+@app.get("/")
+def read_root():
+    return serve_html("index.html")
 
 @app.get("/subscribe")
 def subscribe_page():
-    path = os.path.join(os.getcwd(), "frontend", "subscribe.html")
-    with open(path, "r", encoding="utf-8") as f:
-        content = f.read()
-    return HTMLResponse(content=content)
+    return serve_html("subscribe.html")
+
+@app.get("/terms")
+def terms_page():
+    return serve_html("terms.html")
 
 @app.get("/success")
 def success_page():
-    return HTMLResponse(content="<html><body style='font-family:Arial;text-align:center;padding:50px;background:#1B2A4A;color:white'><h1 style='color:#F5A623'>Bienvenido a ChambeaPR Pro!</h1><p>Tu suscripcion ha sido activada exitosamente.</p><a href='/' style='color:#F5A623'>Volver al inicio</a></body></html>")
+    return HTMLResponse(content="<html><body style='font-family:Arial;text-align:center;padding:50px;background:#1B2A4A;color:white'><h1 style='color:#F5A623'>Bienvenido a ChambeaPR Pro!</h1><p style='color:#ccd6f6;margin-top:15px;'>Tu suscripcion ha sido activada exitosamente.</p><br><a href='/' style='background:#F5A623;color:#1B2A4A;padding:12px 25px;border-radius:10px;text-decoration:none;font-weight:bold;'>Volver al inicio</a></body></html>")
