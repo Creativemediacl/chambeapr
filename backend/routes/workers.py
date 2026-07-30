@@ -36,6 +36,13 @@ def create_worker(worker: WorkerCreate, db: Session = Depends(get_db)):
     db.refresh(db_worker)
     return db_worker
 
+@router.get("/workers/by-email/{email}", response_model=WorkerPublic)
+def get_worker_by_email(email: str, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.email == email).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
+    return worker
+
 @router.get("/workers/{worker_id}", response_model=WorkerPublic)
 def get_worker(worker_id: int, db: Session = Depends(get_db)):
     worker = db.query(Worker).filter(Worker.id == worker_id).first()
@@ -74,13 +81,6 @@ def get_municipios():
 def get_categorias():
     return {"categorias": CATEGORIAS}
 
-
-@router.get("/workers/by-email/{email}", response_model=WorkerPublic)
-def get_worker_by_email(email: str, db: Session = Depends(get_db)):
-    worker = db.query(Worker).filter(Worker.email == email).first()
-    if not worker:
-        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
-    return worker
 
 @router.post("/workers/deactivate/{email}")
 def deactivate_worker(email: str, db: Session = Depends(get_db)):
