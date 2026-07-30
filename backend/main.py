@@ -41,3 +41,8 @@ def terms_page():
 @app.get("/success")
 def success_page():
     return HTMLResponse(content="<html><body style='font-family:Arial;text-align:center;padding:50px;background:#1B2A4A;color:white'><h1 style='color:#F5A623'>Bienvenido a ChambeaPR Pro!</h1><p style='color:#ccd6f6;margin-top:15px;'>Tu suscripcion ha sido activada exitosamente.</p><br><a href='/' style='background:#F5A623;color:#1B2A4A;padding:12px 25px;border-radius:10px;text-decoration:none;font-weight:bold;'>Volver al inicio</a></body></html>")
+
+
+@app.get("/dashboard")
+def dashboard_page():
+    return serve_html("dashboard.html")
