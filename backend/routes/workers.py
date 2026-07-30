@@ -73,3 +73,20 @@ def get_municipios():
 @router.get("/categorias")
 def get_categorias():
     return {"categorias": CATEGORIAS}
+
+
+@router.get("/workers/by-email/{email}", response_model=WorkerPublic)
+def get_worker_by_email(email: str, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.email == email).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
+    return worker
+
+@router.post("/workers/deactivate/{email}")
+def deactivate_worker(email: str, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.email == email).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
+    worker.is_active = False
+    db.commit()
+    return {"message": "Cuenta desactivada exitosamente"}
