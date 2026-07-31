@@ -24,7 +24,7 @@ def get_workers(municipality: Optional[str] = None, profession: Optional[str] = 
     if municipality:
         query = query.filter(Worker.municipality == municipality)
     if profession:
-        query = query.filter(Worker.profession.contains(profession))
+        query = query.filter(Worker.profession.ilike(f"%{profession}%"))
     return query.all()
 
 @router.post("/workers", response_model=WorkerPublic)

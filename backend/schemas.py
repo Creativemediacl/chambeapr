@@ -20,6 +20,7 @@ class WorkerCreate(BaseModel):
 class WorkerPublic(BaseModel):
     id: int
     full_name: str
+    email: str
     profession: str
     municipality: str
     description: str
