@@ -56,3 +56,8 @@ def edit_profile_page():
 @app.get("/forgot-password")
 def forgot_password_page():
     return serve_html("forgot-password.html")
+
+
+@app.get("/reset-password")
+def reset_password_page():
+    return serve_html("reset-password.html")

@@ -130,9 +130,28 @@ def forgot_password(data: dict, db: Session = Depends(get_db)):
     worker = db.query(Worker).filter(Worker.email == email).first()
     if worker:
         token = secrets.token_urlsafe(32)
+        worker.reset_token = token
+        worker.reset_token_expires = datetime.utcnow() + timedelta(hours=1)
+        db.commit()
         try:
             from email_service import send_password_reset_email
             send_password_reset_email(worker.email, worker.full_name, token)
         except Exception as e:
             print(f"Email error: {e}")
     return {"message": "Si ese email esta registrado recibiras un enlace"}
+
+
+@router.post("/reset-password")
+def reset_password(data: dict, db: Session = Depends(get_db)):
+    token = data.get("token")
+    password = data.get("password")
+    worker = db.query(Worker).filter(Worker.reset_token == token).first()
+    if not worker:
+        raise HTTPException(status_code=400, detail="Token invalido")
+    if worker.reset_token_expires < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Token expirado")
+    worker.hashed_password = pwd_context.hash(password)
+    worker.reset_token = None
+    worker.reset_token_expires = None
+    db.commit()
+    return {"message": "Contrasena actualizada exitosamente"}
