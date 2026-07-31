@@ -108,3 +108,15 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     if not worker.hashed_password or not pwd_context.verify(request.password, worker.hashed_password):
         raise HTTPException(status_code=401, detail="Email o contrasena incorrectos")
     return {"success": True, "worker_id": worker.id, "full_name": worker.full_name}
+
+
+@router.put("/workers/update/{email}")
+def update_worker(email: str, data: dict, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.email == email).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Tecnico no encontrado")
+    for key, value in data.items():
+        if hasattr(worker, key) and value:
+            setattr(worker, key, value)
+    db.commit()
+    return {"message": "Perfil actualizado exitosamente"}

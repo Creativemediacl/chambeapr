@@ -46,3 +46,8 @@ def success_page():
 @app.get("/dashboard")
 def dashboard_page():
     return serve_html("dashboard.html")
+
+
+@app.get("/edit-profile")
+def edit_profile_page():
+    return serve_html("edit-profile.html")
