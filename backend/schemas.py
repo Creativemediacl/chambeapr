@@ -20,7 +20,6 @@ class WorkerCreate(BaseModel):
 class WorkerPublic(BaseModel):
     id: int
     full_name: str
-    email: str
     profession: str
     municipality: str
     description: str
@@ -53,4 +52,8 @@ class ReviewPublic(BaseModel):
 
 
 class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class WorkerPrivate(WorkerPublic):
     email: str

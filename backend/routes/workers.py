@@ -5,7 +5,7 @@ from urllib.parse import quote
 from datetime import datetime, timedelta
 from database import get_db
 from models import Worker, Review
-from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic, LoginRequest, ForgotPasswordRequest
+from schemas import WorkerCreate, WorkerPublic, WorkerPrivate, ReviewCreate, ReviewPublic, LoginRequest, ForgotPasswordRequest
 from passlib.context import CryptContext
 from email_service import send_welcome_email
 
@@ -44,7 +44,7 @@ def create_worker(worker: WorkerCreate, db: Session = Depends(get_db)):
     db.refresh(db_worker)
     return db_worker
 
-@router.get("/workers/by-email/{email}", response_model=WorkerPublic)
+@router.get("/workers/by-email/{email}", response_model=WorkerPrivate)
 def get_worker_by_email(email: str, db: Session = Depends(get_db)):
     worker = db.query(Worker).filter(Worker.email == email).first()
     if not worker:
