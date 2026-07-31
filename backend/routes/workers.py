@@ -5,7 +5,7 @@ from urllib.parse import quote
 from datetime import datetime, timedelta
 from database import get_db
 from models import Worker, Review
-from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic, LoginRequest
+from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic, LoginRequest, ForgotPasswordRequest
 from passlib.context import CryptContext
 from email_service import send_welcome_email
 
@@ -125,8 +125,8 @@ def update_worker(email: str, data: dict, db: Session = Depends(get_db)):
 import secrets
 
 @router.post("/forgot-password")
-def forgot_password(data: dict, db: Session = Depends(get_db)):
-    email = data.get("email")
+def forgot_password(request: dict, db: Session = Depends(get_db)):
+    email = request.get("email")
     worker = db.query(Worker).filter(Worker.email == email).first()
     if worker:
         token = secrets.token_urlsafe(32)
