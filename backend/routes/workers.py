@@ -133,12 +133,8 @@ def forgot_password(data: dict, db: Session = Depends(get_db)):
         worker.reset_token = token
         worker.reset_token_expires = datetime.utcnow() + timedelta(hours=1)
         db.commit()
-        try:
-            from email_service import send_password_reset_email
-            send_password_reset_email(worker.email, worker.full_name, token)
-        except Exception as e:
-            print(f"Email error: {e}")
-    return {"message": "Si ese email esta registrado recibiras un enlace"}
+        return {"message": "Enlace generado", "reset_url": f"https://chambeapr.com/reset-password?token={token}"}
+    return {"message": "Email no encontrado"}
 
 
 @router.post("/reset-password")
