@@ -34,7 +34,7 @@ def create_worker(worker: WorkerCreate, db: Session = Depends(get_db)):
     existing = db.query(Worker).filter(Worker.email == worker.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Este email ya esta registrado")
-    trial_ends = datetime.utcnow() + timedelta(days=30)
+    trial_ends = datetime.utcnow() + timedelta(days=90)
     worker_data = worker.dict()
     password = worker_data.pop("password")
     hashed = pwd_context.hash(password)
