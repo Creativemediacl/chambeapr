@@ -120,3 +120,19 @@ def update_worker(email: str, data: dict, db: Session = Depends(get_db)):
             setattr(worker, key, value)
     db.commit()
     return {"message": "Perfil actualizado exitosamente"}
+
+
+import secrets
+
+@router.post("/forgot-password")
+def forgot_password(data: dict, db: Session = Depends(get_db)):
+    email = data.get("email")
+    worker = db.query(Worker).filter(Worker.email == email).first()
+    if worker:
+        token = secrets.token_urlsafe(32)
+        try:
+            from email_service import send_password_reset_email
+            send_password_reset_email(worker.email, worker.full_name, token)
+        except Exception as e:
+            print(f"Email error: {e}")
+    return {"message": "Si ese email esta registrado recibiras un enlace"}

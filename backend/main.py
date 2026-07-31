@@ -51,3 +51,8 @@ def dashboard_page():
 @app.get("/edit-profile")
 def edit_profile_page():
     return serve_html("edit-profile.html")
+
+
+@app.get("/forgot-password")
+def forgot_password_page():
+    return serve_html("forgot-password.html")
