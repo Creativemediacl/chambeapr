@@ -8,3 +8,6 @@ apscheduler
 authlib
 httpx
 stripe
+passlib
+bcrypt
+python-jose

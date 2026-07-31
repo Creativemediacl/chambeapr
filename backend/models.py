@@ -21,6 +21,7 @@ class Worker(Base):
     subscription_status = Column(String, default="trial")
     trial_ends_at = Column(DateTime, default=lambda: datetime.utcnow() + timedelta(days=30))
     accepted_terms = Column(Boolean, default=False)
+    hashed_password = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Review(Base):

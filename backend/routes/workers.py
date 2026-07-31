@@ -5,7 +5,11 @@ from urllib.parse import quote
 from datetime import datetime, timedelta
 from database import get_db
 from models import Worker, Review
-from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic
+from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic, LoginRequest
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 router = APIRouter()
 
@@ -30,7 +34,10 @@ def create_worker(worker: WorkerCreate, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Este email ya esta registrado")
     trial_ends = datetime.utcnow() + timedelta(days=30)
-    db_worker = Worker(**worker.dict(), trial_ends_at=trial_ends)
+    worker_data = worker.dict()
+    password = worker_data.pop("password")
+    hashed = pwd_context.hash(password)
+    db_worker = Worker(**worker_data, trial_ends_at=trial_ends, hashed_password=hashed)
     db.add(db_worker)
     db.commit()
     db.refresh(db_worker)
@@ -90,3 +97,13 @@ def deactivate_worker(email: str, db: Session = Depends(get_db)):
     worker.is_active = False
     db.commit()
     return {"message": "Cuenta desactivada exitosamente"}
+
+
+@router.post("/login")
+def login(request: LoginRequest, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.email == request.email).first()
+    if not worker:
+        raise HTTPException(status_code=401, detail="Email o contrasena incorrectos")
+    if not worker.hashed_password or not pwd_context.verify(request.password, worker.hashed_password):
+        raise HTTPException(status_code=401, detail="Email o contrasena incorrectos")
+    return {"success": True, "worker_id": worker.id, "full_name": worker.full_name}

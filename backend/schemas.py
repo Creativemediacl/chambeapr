@@ -1,5 +1,9 @@
 from pydantic import BaseModel
 from typing import Optional
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 from datetime import datetime
 
 class WorkerCreate(BaseModel):
@@ -11,6 +15,7 @@ class WorkerCreate(BaseModel):
     whatsapp_number: str
     email: str
     accepted_terms: bool
+    password: str
 
 class WorkerPublic(BaseModel):
     id: int
