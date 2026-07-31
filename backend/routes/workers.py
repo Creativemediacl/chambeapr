@@ -7,6 +7,7 @@ from database import get_db
 from models import Worker, Review
 from schemas import WorkerCreate, WorkerPublic, ReviewCreate, ReviewPublic, LoginRequest
 from passlib.context import CryptContext
+from email_service import send_welcome_email
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
