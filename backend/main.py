@@ -38,25 +38,25 @@ def subscribe_page():
 def terms_page():
     return serve_html("terms.html")
 
+@app.get("/privacy")
+def privacy_page():
+    return serve_html("privacy.html")
+
 @app.get("/success")
 def success_page():
     return HTMLResponse(content="<html><body style='font-family:Arial;text-align:center;padding:50px;background:#1B2A4A;color:white'><h1 style='color:#F5A623'>Bienvenido a ChambeaPR Pro!</h1><p style='color:#ccd6f6;margin-top:15px;'>Tu suscripcion ha sido activada exitosamente.</p><br><a href='/' style='background:#F5A623;color:#1B2A4A;padding:12px 25px;border-radius:10px;text-decoration:none;font-weight:bold;'>Volver al inicio</a></body></html>")
-
 
 @app.get("/dashboard")
 def dashboard_page():
     return serve_html("dashboard.html")
 
-
 @app.get("/edit-profile")
 def edit_profile_page():
     return serve_html("edit-profile.html")
 
-
 @app.get("/forgot-password")
 def forgot_password_page():
     return serve_html("forgot-password.html")
-
 
 @app.get("/reset-password")
 def reset_password_page():
